@@ -12,8 +12,8 @@ int main() {
     struct dirent *ent;
     map<string, vector<string>> filesByExtension;
 
-    if ((dir = opendir(".")) != NULL) {
-        while ((ent = readdir(dir)) != NULL) {
+    if ((dir = opendir(".")) != nullptr) {
+        while ((ent = readdir(dir)) != nullptr) {
             if (ent->d_type == DT_REG) {
                 string file = ent->d_name;
                 string extension = file.substr(file.find_last_of(".") + 1);
