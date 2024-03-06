@@ -8,3 +8,9 @@ if (NOT MSVC)
 endif()
 
 add_executable(lsext lsext.cc)
+
+if (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    set_target_properties(lsext PROPERTIES
+        OSX_ARCHITECTURES "x86_64;arm64"
+    )
+endif()
