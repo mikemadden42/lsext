@@ -45,9 +45,9 @@ the tool unless marked as coming from reading the code.
     Use `target_compile_options` instead.
   - `CMakeLists.txt:14` forces both architectures, so
     `-DCMAKE_OSX_ARCHITECTURES=arm64` still produces a universal binary.
-- [ ] **CI only runs on Ubuntu.** The macOS universal build is never exercised
+- [x] **CI only runs on Ubuntu.** The macOS universal build is never exercised
       there.
-- [ ] Update `actions/checkout@v3`, which is out of date.
+- [x] Update `actions/checkout@v3`, which is out of date.
 
 ## Minor cleanup
 
@@ -55,13 +55,9 @@ the tool unless marked as coming from reading the code.
       but only pulled in indirectly.
 - [x] Avoid copying each key and vector just to sort them in the output loop.
       Sort in place with `auto &`, or use `map<string, set<string>>`.
-- [ ] Confirm the `if (NOT MSVC)` branch works. `dirent.h` is gone, so MSVC
-      builds should now be possible, but this hasn't been tried.
+- [x] Remove the `if (NOT MSVC)` branch. Windows isn't a supported platform.
 - [x] Replace `endl` with `'\n'`. This is a style issue: 50,000 files still took
       only 0.23s.
 - [x] Add an `install()` rule.
 - [x] Add build instructions to the README.
 
-## Suggested order
-
-1. Add a macOS CI job and update `actions/checkout`.

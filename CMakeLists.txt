@@ -6,9 +6,7 @@ set (CMAKE_CXX_STANDARD 17)
 
 add_executable(lsext lsext.cc)
 
-if (NOT MSVC)
-  target_compile_options(lsext PRIVATE -Wall -Wextra -pedantic)
-endif()
+target_compile_options(lsext PRIVATE -Wall -Wextra -pedantic)
 
 if (CMAKE_SYSTEM_NAME MATCHES "Darwin" AND NOT CMAKE_OSX_ARCHITECTURES)
     set_target_properties(lsext PROPERTIES
