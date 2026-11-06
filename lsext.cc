@@ -43,5 +43,10 @@ int main() {
         cout << endl;
     }
 
+    if (!cout.flush()) {
+        cerr << "lsext: error writing output" << endl;
+        return EXIT_FAILURE;
+    }
+
     return 0;
 }

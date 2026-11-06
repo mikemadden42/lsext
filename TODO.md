@@ -17,7 +17,7 @@ the tool unless marked as coming from reading the code.
       appeared in testing). This may be intended, but it isn't documented.
       From reading the code: some filesystems return `DT_UNKNOWN`, which would
       drop every file, print nothing and exit 0. Not reproduced.
-- [ ] **Write failures are ignored.** With stdout closed, it printed nothing
+- [x] **Write failures are ignored.** With stdout closed, it printed nothing
       and still exited 0. Check `cout` before returning.
 - [x] **Extension parsing gives odd groups (`lsext.cc:19`).**
       `std::filesystem::path::extension()` handles the dotfile and no-dot
@@ -38,11 +38,8 @@ the tool unless marked as coming from reading the code.
 
 ## Build and CI
 
-- [ ] **The CI test step may be failing.** There are no tests or
-      `enable_testing()`, and `ctest` exits 1 locally with "No test
-      configuration file found!" (CMake 4.4.5). Not confirmed on CI: the public
-      API showed no runs, and the runner's CMake may behave differently. Adding
-      a real test would fix it.
+- [ ] **CI runs no tests.** There are no tests or `enable_testing()`, so the
+      `ctest` step passes without testing anything. Add a real test.
 - [ ] **CMake overrides user settings.**
   - `CMakeLists.txt:7` replaces `CMAKE_CXX_FLAGS`, so `CXXFLAGS` and
     `-DCMAKE_CXX_FLAGS` are dropped, which blocks things like sanitizer builds.
@@ -57,7 +54,7 @@ the tool unless marked as coming from reading the code.
 
 - [x] Include `<string>`, `<cstdio>` and `<cstdlib>` directly. They are used
       but only pulled in indirectly.
-- [ ] Avoid copying each key and vector just to sort them (`lsext.cc:30-31`).
+- [ ] Avoid copying each key and vector just to sort them in the output loop.
       Sort in place with `auto &`, or use `map<string, set<string>>`.
 - [ ] Confirm the `if (NOT MSVC)` branch works. `dirent.h` is gone, so MSVC
       builds should now be possible, but this hasn't been tried.
@@ -68,7 +65,6 @@ the tool unless marked as coming from reading the code.
 
 ## Suggested order
 
-1. Add the output check.
-2. Add a small CTest script that runs against a fixture directory, which also
-   resolves the CI test step.
-3. Fix the CMake settings.
+1. Add a small CTest script that runs against a fixture directory, so the CI
+   test step checks something.
+2. Fix the CMake settings.
