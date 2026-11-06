@@ -31,7 +31,7 @@ the tool unless marked as coming from reading the code.
       | `trailing.`              | blank `:` heading                            | no extension               |
       | `a.txt`, `B.TXT`, `d.Txt` | three separate groups                       | possibly one               |
 
-- [ ] **Arguments are ignored.** `lsext --help` and `lsext sub` both list the
+- [x] **Arguments are ignored.** `lsext --help` and `lsext sub` both list the
       current directory, so `lsext sub` shows the wrong directory with no error.
 - [x] **The error message has no context (`lsext.cc:25`).** `perror("")` prints
       only `Permission denied`; `perror("lsext")` would name the source.
@@ -60,8 +60,10 @@ the tool unless marked as coming from reading the code.
 - [ ] Replace `endl` with `'\n'`. This is a style issue: 50,000 files still took
       only 0.23s.
 - [ ] Add an `install()` rule.
-- [ ] Add usage and build instructions to the README.
+- [ ] Add build instructions to the README.
 
 ## Suggested order
 
-1. Handle arguments.
+1. Add `install()` and finish the README.
+2. Tidy the output loop.
+3. Add a macOS CI job and update `actions/checkout`.

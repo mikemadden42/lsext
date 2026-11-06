@@ -12,11 +12,12 @@ fail() {
     failures=$((failures + 1))
 }
 
-# Compare the output of lsext in the current directory to stdin.
+# Run lsext with the given arguments and compare its stdout to stdin.
 expect_output() {
     name=$1
+    shift
     cat >"$work/expected"
-    "$lsext" >"$work/actual" 2>&1
+    "$lsext" "$@" >"$work/actual" 2>/dev/null
     status=$?
     if [ "$status" -ne 0 ]; then
         fail "$name: exited $status"
@@ -25,11 +26,12 @@ expect_output() {
     fi
 }
 
-# Expect lsext in the current directory to exit 1 and report the message.
+# Run lsext with the given arguments and expect exit 1 and the message.
 expect_failure() {
     name=$1
     message=$2
-    "$lsext" 2>"$work/stderr" >&-
+    shift 2
+    "$lsext" "$@" 2>"$work/stderr" >/dev/null
     status=$?
     if [ "$status" -ne 1 ]; then
         fail "$name: exited $status"
@@ -85,7 +87,11 @@ expect_output "prints nothing for an empty directory" </dev/null
 
 mkdir "$work/closed-stdout" && cd "$work/closed-stdout" || exit 1
 touch a.txt
-expect_failure "fails when stdout is closed" "error writing output"
+"$lsext" 2>"$work/stderr" >&-
+status=$?
+if [ "$status" -ne 1 ] || ! grep -q "error writing output" "$work/stderr"; then
+    fail "fails when stdout is closed: exited $status"
+fi
 
 # Root ignores directory permissions.
 if [ "$(id -u)" -ne 0 ]; then
@@ -94,6 +100,52 @@ if [ "$(id -u)" -ne 0 ]; then
     expect_failure "fails on an unreadable directory" "lsext: "
     chmod 755 .
 fi
+
+cd "$work" || exit 1
+touch file.txt
+
+expect_output "lists the directory given as an argument" grouping <<'END'
+gz:
+- archive.tar.gz
+
+md:
+- notes.md
+
+txt:
+- apple.txt
+- mango.txt
+- zebra.txt
+
+END
+
+expect_output "accepts a trailing slash" no-extension/ <<'END'
+(no extension):
+- .bashrc
+- .txt
+- Makefile
+- README
+- trailing.
+
+END
+
+expect_output "resolves links relative to the argument" symlinks <<'END'
+txt:
+- link.txt
+- real.txt
+
+END
+
+ln -s grouping/subdir empty-link
+expect_output "follows a link to a directory" empty-link </dev/null
+
+expect_output "prints usage for --help" --help <<'END'
+usage: lsext [directory]
+END
+
+expect_failure "fails on a missing directory" "lsext: missing: " missing
+expect_failure "fails on a file argument" "lsext: file.txt: " file.txt
+expect_failure "rejects an unknown option" "usage: lsext" -x
+expect_failure "rejects two directories" "usage: lsext" grouping symlinks
 
 if [ "$failures" -ne 0 ]; then
     echo "$failures test(s) failed"

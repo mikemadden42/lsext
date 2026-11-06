@@ -10,11 +10,23 @@
 using namespace std;
 namespace fs = std::filesystem;
 
-int main() {
+int main(int argc, char *argv[]) {
+    const string usage = "usage: lsext [directory]";
+
+    if (argc == 2 && string(argv[1]) == "--help") {
+        cout << usage << endl;
+        return 0;
+    }
+    if (argc > 2 || (argc == 2 && argv[1][0] == '-')) {
+        cerr << usage << endl;
+        return EXIT_FAILURE;
+    }
+
     map<string, vector<string>> filesByExtension;
+    fs::path dir = argc == 2 ? argv[1] : ".";
     error_code ec;
 
-    fs::directory_iterator it(".", ec);
+    fs::directory_iterator it(dir, ec);
     for (; !ec && it != fs::directory_iterator(); it.increment(ec)) {
         error_code statusEc;
         if (it->is_regular_file(statusEc)) {
@@ -27,7 +39,7 @@ int main() {
         }
     }
     if (ec) {
-        cerr << "lsext: " << ec.message() << endl;
+        cerr << "lsext: " << dir.string() << ": " << ec.message() << endl;
         return EXIT_FAILURE;
     }
 
