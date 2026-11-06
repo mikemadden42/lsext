@@ -59,11 +59,10 @@ the tool unless marked as coming from reading the code.
       builds should now be possible, but this hasn't been tried.
 - [ ] Replace `endl` with `'\n'`. This is a style issue: 50,000 files still took
       only 0.23s.
-- [ ] Add an `install()` rule.
-- [ ] Add build instructions to the README.
+- [x] Add an `install()` rule.
+- [x] Add build instructions to the README.
 
 ## Suggested order
 
-1. Add `install()` and finish the README.
-2. Tidy the output loop.
-3. Add a macOS CI job and update `actions/checkout`.
+1. Tidy the output loop.
+2. Add a macOS CI job and update `actions/checkout`.
