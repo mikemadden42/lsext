@@ -1,28 +1,33 @@
-#include <dirent.h>
-
 #include <algorithm>
+#include <cstdlib>
+#include <filesystem>
 #include <iostream>
 #include <map>
+#include <string>
+#include <system_error>
 #include <vector>
 
 using namespace std;
+namespace fs = std::filesystem;
 
 int main() {
-    DIR *dir;
-    struct dirent *ent;
     map<string, vector<string>> filesByExtension;
+    error_code ec;
 
-    if ((dir = opendir(".")) != nullptr) {
-        while ((ent = readdir(dir)) != nullptr) {
-            if (ent->d_type == DT_REG) {
-                string file = ent->d_name;
-                string extension = file.substr(file.find_last_of('.') + 1);
-                filesByExtension[extension].push_back(file);
+    fs::directory_iterator it(".", ec);
+    for (; !ec && it != fs::directory_iterator(); it.increment(ec)) {
+        error_code statusEc;
+        if (it->is_regular_file(statusEc)) {
+            fs::path file = it->path().filename();
+            string extension = file.extension().string();
+            if (!extension.empty()) {
+                extension.erase(0, 1);
             }
+            filesByExtension[extension].push_back(file.string());
         }
-        closedir(dir);
-    } else {
-        perror("");
+    }
+    if (ec) {
+        cerr << "lsext: " << ec.message() << endl;
         return EXIT_FAILURE;
     }
 
@@ -30,7 +35,8 @@ int main() {
         string extension = extensionFiles.first;
         vector<string> files = extensionFiles.second;
         sort(files.begin(), files.end());
-        cout << extension << ":" << endl;
+        cout << (extension.empty() ? "(no extension)" : extension) << ":"
+             << endl;
         for (const string &file : files) {
             cout << "- " << file << endl;
         }

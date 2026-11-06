@@ -1,0 +1,74 @@
+# TODO
+
+Findings from a project review on 2026-11-06. Items were confirmed by running
+the tool unless marked as coming from reading the code.
+
+## Decisions needed
+
+- [x] Should symlinks count as files? Yes for links to files. Dangling links
+      and links to directories are skipped.
+- [ ] Should extensions be case-insensitive?
+- [x] Should dotfiles count as having no extension? Yes.
+
+## Bugs
+
+- [x] **Files can go missing without warning (`lsext.cc:17`).** The
+      `d_type == DT_REG` check drops symlinks to files (`link.txt` never
+      appeared in testing). This may be intended, but it isn't documented.
+      From reading the code: some filesystems return `DT_UNKNOWN`, which would
+      drop every file, print nothing and exit 0. Not reproduced.
+- [ ] **Write failures are ignored.** With stdout closed, it printed nothing
+      and still exited 0. Check `cout` before returning.
+- [x] **Extension parsing gives odd groups (`lsext.cc:19`).**
+      `std::filesystem::path::extension()` handles the dotfile and no-dot
+      cases, and the project is already on C++17. Files without a dot only work
+      because `npos + 1` wraps to 0.
+
+      | File                     | Result                                       | Likely expected            |
+      |--------------------------|----------------------------------------------|----------------------------|
+      | `Makefile`, `README`     | each gets its own group, named after the file | shared "no extension" group |
+      | `.bashrc`, `.gitignore`  | grouped as `bashrc`, `gitignore`             | no extension               |
+      | `trailing.`              | blank `:` heading                            | no extension               |
+      | `a.txt`, `B.TXT`, `d.Txt` | three separate groups                       | possibly one               |
+
+- [ ] **Arguments are ignored.** `lsext --help` and `lsext sub` both list the
+      current directory, so `lsext sub` shows the wrong directory with no error.
+- [x] **The error message has no context (`lsext.cc:25`).** `perror("")` prints
+      only `Permission denied`; `perror("lsext")` would name the source.
+
+## Build and CI
+
+- [ ] **The CI test step may be failing.** There are no tests or
+      `enable_testing()`, and `ctest` exits 1 locally with "No test
+      configuration file found!" (CMake 4.4.5). Not confirmed on CI: the public
+      API showed no runs, and the runner's CMake may behave differently. Adding
+      a real test would fix it.
+- [ ] **CMake overrides user settings.**
+  - `CMakeLists.txt:7` replaces `CMAKE_CXX_FLAGS`, so `CXXFLAGS` and
+    `-DCMAKE_CXX_FLAGS` are dropped, which blocks things like sanitizer builds.
+    Use `target_compile_options` instead.
+  - `CMakeLists.txt:14` forces both architectures, so
+    `-DCMAKE_OSX_ARCHITECTURES=arm64` still produces a universal binary.
+- [ ] **CI only runs on Ubuntu.** The macOS universal build is never exercised
+      there.
+- [ ] Update `actions/checkout@v3`, which is out of date.
+
+## Minor cleanup
+
+- [x] Include `<string>`, `<cstdio>` and `<cstdlib>` directly. They are used
+      but only pulled in indirectly.
+- [ ] Avoid copying each key and vector just to sort them (`lsext.cc:30-31`).
+      Sort in place with `auto &`, or use `map<string, set<string>>`.
+- [ ] Confirm the `if (NOT MSVC)` branch works. `dirent.h` is gone, so MSVC
+      builds should now be possible, but this hasn't been tried.
+- [ ] Replace `endl` with `'\n'`. This is a style issue: 50,000 files still took
+      only 0.23s.
+- [ ] Add an `install()` rule.
+- [ ] Add usage and build instructions to the README.
+
+## Suggested order
+
+1. Add the output check.
+2. Add a small CTest script that runs against a fixture directory, which also
+   resolves the CI test step.
+3. Fix the CMake settings.
