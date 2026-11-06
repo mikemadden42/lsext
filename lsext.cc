@@ -14,11 +14,11 @@ int main(int argc, char *argv[]) {
     const string usage = "usage: lsext [directory]";
 
     if (argc == 2 && string(argv[1]) == "--help") {
-        cout << usage << endl;
+        cout << usage << '\n';
         return 0;
     }
     if (argc > 2 || (argc == 2 && argv[1][0] == '-')) {
-        cerr << usage << endl;
+        cerr << usage << '\n';
         return EXIT_FAILURE;
     }
 
@@ -39,24 +39,23 @@ int main(int argc, char *argv[]) {
         }
     }
     if (ec) {
-        cerr << "lsext: " << dir.string() << ": " << ec.message() << endl;
+        cerr << "lsext: " << dir.string() << ": " << ec.message() << '\n';
         return EXIT_FAILURE;
     }
 
-    for (const auto &extensionFiles : filesByExtension) {
-        string extension = extensionFiles.first;
-        vector<string> files = extensionFiles.second;
+    for (auto &extensionFiles : filesByExtension) {
+        const string &extension = extensionFiles.first;
+        vector<string> &files = extensionFiles.second;
         sort(files.begin(), files.end());
-        cout << (extension.empty() ? "(no extension)" : extension) << ":"
-             << endl;
+        cout << (extension.empty() ? "(no extension)" : extension) << ":\n";
         for (const string &file : files) {
-            cout << "- " << file << endl;
+            cout << "- " << file << '\n';
         }
-        cout << endl;
+        cout << '\n';
     }
 
     if (!cout.flush()) {
-        cerr << "lsext: error writing output" << endl;
+        cerr << "lsext: error writing output\n";
         return EXIT_FAILURE;
     }
 

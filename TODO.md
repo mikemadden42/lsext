@@ -53,16 +53,15 @@ the tool unless marked as coming from reading the code.
 
 - [x] Include `<string>`, `<cstdio>` and `<cstdlib>` directly. They are used
       but only pulled in indirectly.
-- [ ] Avoid copying each key and vector just to sort them in the output loop.
+- [x] Avoid copying each key and vector just to sort them in the output loop.
       Sort in place with `auto &`, or use `map<string, set<string>>`.
 - [ ] Confirm the `if (NOT MSVC)` branch works. `dirent.h` is gone, so MSVC
       builds should now be possible, but this hasn't been tried.
-- [ ] Replace `endl` with `'\n'`. This is a style issue: 50,000 files still took
+- [x] Replace `endl` with `'\n'`. This is a style issue: 50,000 files still took
       only 0.23s.
 - [x] Add an `install()` rule.
 - [x] Add build instructions to the README.
 
 ## Suggested order
 
-1. Tidy the output loop.
-2. Add a macOS CI job and update `actions/checkout`.
+1. Add a macOS CI job and update `actions/checkout`.
