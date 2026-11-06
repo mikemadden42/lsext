@@ -38,8 +38,7 @@ the tool unless marked as coming from reading the code.
 
 ## Build and CI
 
-- [ ] **CI runs no tests.** There are no tests or `enable_testing()`, so the
-      `ctest` step passes without testing anything. Add a real test.
+- [x] **CI runs no tests.** `tests/run_tests.sh` now runs through CTest.
 - [ ] **CMake overrides user settings.**
   - `CMakeLists.txt:7` replaces `CMAKE_CXX_FLAGS`, so `CXXFLAGS` and
     `-DCMAKE_CXX_FLAGS` are dropped, which blocks things like sanitizer builds.
@@ -65,6 +64,5 @@ the tool unless marked as coming from reading the code.
 
 ## Suggested order
 
-1. Add a small CTest script that runs against a fixture directory, so the CI
-   test step checks something.
-2. Fix the CMake settings.
+1. Fix the CMake settings.
+2. Handle arguments.
