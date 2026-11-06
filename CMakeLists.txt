@@ -16,6 +16,8 @@ if (CMAKE_SYSTEM_NAME MATCHES "Darwin" AND NOT CMAKE_OSX_ARCHITECTURES)
     )
 endif()
 
+install(TARGETS lsext DESTINATION bin)
+
 enable_testing()
 add_test(NAME lsext
     COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/tests/run_tests.sh $<TARGET_FILE:lsext>
