@@ -39,7 +39,7 @@ the tool unless marked as coming from reading the code.
 ## Build and CI
 
 - [x] **CI runs no tests.** `tests/run_tests.sh` now runs through CTest.
-- [ ] **CMake overrides user settings.**
+- [x] **CMake overrides user settings.**
   - `CMakeLists.txt:7` replaces `CMAKE_CXX_FLAGS`, so `CXXFLAGS` and
     `-DCMAKE_CXX_FLAGS` are dropped, which blocks things like sanitizer builds.
     Use `target_compile_options` instead.
@@ -64,5 +64,4 @@ the tool unless marked as coming from reading the code.
 
 ## Suggested order
 
-1. Fix the CMake settings.
-2. Handle arguments.
+1. Handle arguments.
