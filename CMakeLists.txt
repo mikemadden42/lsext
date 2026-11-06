@@ -14,3 +14,8 @@ if (CMAKE_SYSTEM_NAME MATCHES "Darwin")
         OSX_ARCHITECTURES "x86_64;arm64"
     )
 endif()
+
+enable_testing()
+add_test(NAME lsext
+    COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/tests/run_tests.sh $<TARGET_FILE:lsext>
+)
